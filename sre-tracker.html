@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jawwad's Junior SRE Roadmap</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+  header { background: linear-gradient(135deg, #1e3a5f, #0f172a); padding: 24px 32px; border-bottom: 1px solid #1e40af; }
+  header h1 { font-size: 1.6rem; font-weight: 700; color: #60a5fa; }
+  header p { color: #94a3b8; margin-top: 4px; font-size: 0.9rem; }
+
+  .progress-bar-wrap { background: #1e293b; height: 8px; border-radius: 4px; margin: 16px 0 4px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); border-radius: 4px; transition: width 0.4s ease; }
+  .progress-label { font-size: 0.82rem; color: #64748b; }
+
+  nav { display: flex; gap: 8px; padding: 16px 32px; background: #0f172a; border-bottom: 1px solid #1e293b; flex-wrap: wrap; }
+  nav button { padding: 8px 16px; border-radius: 20px; border: 1px solid #334155; background: transparent; color: #94a3b8; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; white-space: nowrap; }
+  nav button:hover { border-color: #3b82f6; color: #60a5fa; }
+  nav button.active { background: #1e40af; border-color: #3b82f6; color: #fff; font-weight: 600; }
+  nav button .badge { background: #334155; color: #94a3b8; border-radius: 10px; padding: 1px 7px; font-size: 0.75rem; margin-left: 6px; }
+  nav button.active .badge { background: #2563eb; color: #bfdbfe; }
+
+  main { padding: 24px 32px; max-width: 900px; }
+
+  .phase-header { margin-bottom: 20px; }
+  .phase-header h2 { font-size: 1.3rem; font-weight: 700; color: #f1f5f9; }
+  .phase-header .weeks { font-size: 0.82rem; color: #3b82f6; font-weight: 600; margin-top: 2px; }
+  .analogy-box { background: #1e293b; border-left: 3px solid #f59e0b; border-radius: 6px; padding: 10px 14px; margin: 12px 0 20px; font-size: 0.85rem; color: #fcd34d; }
+  .analogy-box strong { color: #fbbf24; }
+
+  .topic { margin-bottom: 20px; }
+  .topic-title { font-size: 0.95rem; font-weight: 600; color: #93c5fd; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .topic-progress { font-size: 0.75rem; color: #64748b; margin-left: auto; }
+
+  .task { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s; border: 1px solid transparent; margin-bottom: 6px; }
+  .task:hover { background: #1e293b; border-color: #334155; }
+  .task.done { opacity: 0.6; }
+  .task.done .task-text { text-decoration: line-through; color: #64748b; }
+
+  .checkbox { width: 20px; height: 20px; border-radius: 5px; border: 2px solid #334155; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all 0.2s; background: transparent; }
+  .task.done .checkbox { background: #22c55e; border-color: #22c55e; }
+  .task.done .checkbox::after { content: '✓'; color: white; font-size: 12px; font-weight: bold; }
+
+  .task-text { font-size: 0.88rem; color: #cbd5e1; line-height: 1.4; }
+  .task-resource { font-size: 0.78rem; color: #3b82f6; margin-top: 3px; }
+  .task-resource a { color: #60a5fa; text-decoration: none; }
+  .task-resource a:hover { text-decoration: underline; }
+
+  .phase-stats { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat { background: #1e293b; border-radius: 8px; padding: 12px 16px; flex: 1; min-width: 120px; }
+  .stat .num { font-size: 1.5rem; font-weight: 700; color: #60a5fa; }
+  .stat .lbl { font-size: 0.75rem; color: #64748b; margin-top: 2px; }
+
+  @media (max-width: 600px) {
+    header, nav, main { padding-left: 16px; padding-right: 16px; }
+    nav { gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Jawwad's Junior SRE Roadmap</h1>
+  <p>Finance Manager → Site Reliability Engineer · 20 weeks · 8–15 hrs/week</p>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="globalBar"></div></div>
+  <div class="progress-label" id="globalLabel"></div>
+</header>
+
+<nav id="phaseNav"></nav>
+
+<main id="phaseContent"></main>
+
+<script>
+const PHASES = [
+  {
+    id: 1, label: "Phase 1", title: "Linux, Networking, Security & Git", weeks: "Weeks 1–4",
+    analogy: "💼 Finance analogy: Linux is the operating system beneath everything — like the accounting software your whole team depends on. Networking is how data 'clears' between systems, just like SWIFT or ACH. Security is your compliance and audit controls. Git is version control — like track changes in Excel, but for code.",
+    topics: [
+      {
+        title: "Linux Fundamentals",
+        tasks: [
+          { id: "l1", text: "Navigate the filesystem: ls, cd, pwd, find", resource: "Free: OverTheWire Bandit (bandit.labs.overthewire.org)", done: true },
+          { id: "l2", text: "File operations: cp, mv, rm, chmod, chown", done: true },
+          { id: "l3", text: "Text tools: cat, grep, awk, sed, tail -f", done: true },
+          { id: "l4", text: "Process management: ps, top, htop, kill, systemctl", done: true },
+          { id: "l5", text: "Users and permissions: sudo, useradd, groups", resource: "Free: Linux Journey (linuxjourney.com)", done: true },
+          { id: "l6", text: "Practice uptime, df -h, free -m, top in SecureCRT on your EC2", done: true },
+        ]
+      },
+      {
+        title: "Linux Sysadmin Basics",
+        tasks: [
+          { id: "ls1", text: "Service management: systemctl start/stop/enable/status", done: true },
+          { id: "ls2", text: "Log management: journalctl, /var/log/, logrotate", done: true },
+          { id: "ls3", text: "Disk management: fdisk, lsblk, mount, df, du" },
+          { id: "ls4", text: "Cron jobs: crontab -e, schedule a recurring task" },
+          { id: "ls5", text: "Package management: yum/dnf (Amazon Linux) or apt (Ubuntu)" },
+          { id: "ls6", text: "Environment variables and shell config: .bashrc, .bash_profile" },
+          { id: "ls7", text: "Archive and transfer: tar, scp, rsync", resource: "Free: linuxcommand.org" },
+        ]
+      },
+      {
+        title: "Networking Basics",
+        tasks: [
+          { id: "n1", text: "Understand TCP/IP, DNS, HTTP/HTTPS, ports" },
+          { id: "n2", text: "Practice: ping, curl, nslookup, netstat, ss" },
+          { id: "n3", text: "Understand what a load balancer does" },
+          { id: "n4", text: "Read about subnets, CIDRs, VPCs (AWS context)" },
+          { id: "n5", text: "Trace a network path: traceroute, mtr" },
+          { id: "n6", text: "Understand TCP handshake, timeouts, and connection states" },
+        ]
+      },
+      {
+        title: "Security Basics",
+        tasks: [
+          { id: "sec1", text: "SSH hardening: disable root login, use key-based auth only", resource: "Free: ssh.com/academy", done: true },
+          { id: "sec2", text: "Firewall basics: ufw (Ubuntu) or firewalld (Amazon Linux) — allow/deny ports" },
+          { id: "sec3", text: "Principle of least privilege: understand why root should never be used daily" },
+          { id: "sec4", text: "TLS/SSL basics: what certificates are, how HTTPS works" },
+          { id: "sec5", text: "Secrets management: never hardcode passwords — use env vars or AWS Secrets Manager", done: true },
+          { id: "sec6", text: "Understand common attack vectors: brute force, exposed ports, outdated packages", done: true },
+          { id: "sec7", text: "Run a basic security audit: check open ports with nmap or ss" },
+          { id: "sec8", text: "Generate SSH key pairs per device — one key per machine, never shared", done: true },
+          { id: "sec9", text: "Manage authorized_keys: add/remove keys for multi-device access", done: true },
+          { id: "sec10", text: "Understand dynamic IPs — update Security Group inbound rules when IP changes", done: true },
+        ]
+      },
+      {
+        title: "Git & Version Control",
+        tasks: [
+          { id: "g1", text: "git init, clone, add, commit, push, pull" },
+          { id: "g2", text: "Branching and merging: git branch, checkout, merge" },
+          { id: "g3", text: "Create a free GitHub account and push a repo", resource: "Free: learngitbranching.js.org" },
+          { id: "g4", text: "Understand pull requests and code review workflow" },
+          { id: "g5", text: "Host SRE Progress Tracker on GitHub Pages (live URL)", done: false },
+        ]
+      }
+    ]
+  },
+  {
+    id: 2, label: "Phase 2", title: "Cloud & Infrastructure", weeks: "Weeks 5–8",
+    analogy: "💼 Finance analogy: AWS and GCP are like two competing banks — both offer the same core services but different products and fees. Terraform is your compliance automation script. Ansible is like a batch instruction file sent to multiple branches at once — one playbook, many servers configured identically.",
+    topics: [
+      {
+        title: "AWS (you've already crushed this!)",
+        tasks: [
+          { id: "a1", text: "AWS Free Tier account created", done: true },
+          { id: "a2", text: "IAM admin user + MFA enabled", done: true },
+          { id: "a3", text: "Billing alerts set up (Free Tier + CloudWatch + $1 budget)", done: true },
+          { id: "a4", text: "S3 bucket created and file uploaded", done: true },
+          { id: "a5", text: "EC2 instance launched (t2.micro, Amazon Linux)", done: true },
+          { id: "a6", text: "SSH connection via SecureCRT and PowerShell", done: true },
+          { id: "a7", text: "Set up Elastic IP to keep a static IP on your EC2" },
+          { id: "a8", text: "Create a VPC with public and private subnets" },
+          { id: "a9", text: "Try AWS Lambda: write a Hello World function" },
+          { id: "a10", text: "Target: AWS Cloud Practitioner cert (Q3 2026)" },
+        ]
+      },
+      {
+        title: "Docker",
+        tasks: [
+          { id: "d1", text: "Install Docker on your EC2 instance" },
+          { id: "d2", text: "Run your first container: docker run hello-world" },
+          { id: "d3", text: "Write a Dockerfile and build a custom image" },
+          { id: "d4", text: "Use docker-compose to run multi-container app", resource: "Free: Play with Docker (labs.play-with-docker.com)" },
+          { id: "d5", text: "Understand images, containers, volumes, networks" },
+        ]
+      },
+      {
+        title: "Terraform Basics",
+        tasks: [
+          { id: "t1", text: "Install Terraform, understand HCL syntax" },
+          { id: "t2", text: "Write a .tf file to create an S3 bucket" },
+          { id: "t3", text: "terraform init, plan, apply, destroy lifecycle" },
+          { id: "t4", text: "Use variables and outputs in Terraform", resource: "Free: developer.hashicorp.com/terraform/tutorials" },
+        ]
+      },
+      {
+        title: "GCP (Google Cloud Platform)",
+        tasks: [
+          { id: "gcp1", text: "Create a free GCP account (Google gives $300 free credits)", resource: "Free: cloud.google.com/free" },
+          { id: "gcp2", text: "Explore GCP Console: compare layout to AWS" },
+          { id: "gcp3", text: "Launch a Compute Engine VM (GCP's equivalent of EC2)" },
+          { id: "gcp4", text: "Create a Cloud Storage bucket (GCP's equivalent of S3)" },
+          { id: "gcp5", text: "Understand IAM roles in GCP vs AWS — spot the differences" },
+          { id: "gcp6", text: "Try Cloud Shell: GCP's browser-based terminal" },
+          { id: "gcp7", text: "Understand GKE (Google Kubernetes Engine) — used widely in SRE roles", resource: "Free: cloud.google.com/training/free-tier" },
+        ]
+      },
+      {
+        title: "Ansible / Config Management",
+        tasks: [
+          { id: "ans1", text: "Understand what config management solves: why not SSH into 50 servers manually?" },
+          { id: "ans2", text: "Install Ansible on your EC2 (or local machine)" },
+          { id: "ans3", text: "Write your first inventory file listing your servers" },
+          { id: "ans4", text: "Run an ad-hoc command: ansible all -m ping" },
+          { id: "ans5", text: "Write a playbook: install nginx on a server with one command" },
+          { id: "ans6", text: "Use variables and templates (Jinja2) in playbooks" },
+          { id: "ans7", text: "Understand Ansible roles — organising playbooks for reuse", resource: "Free: docs.ansible.com/ansible/latest/getting_started" },
+        ]
+      }
+    ]
+  },
+  {
+    id: 3, label: "Phase 3", title: "Monitoring & Reliability", weeks: "Weeks 9–12",
+    analogy: "💼 Finance analogy: This is your core SRE work. SLOs are like KPIs — they define what 'good' looks like. Prometheus collects metrics like your BI tool collecting data. Grafana is Power BI for infrastructure. Incident response is your escalation protocol when a key system fails.",
+    topics: [
+      {
+        title: "Prometheus & Grafana",
+        tasks: [
+          { id: "p1", text: "Deploy Prometheus on your EC2, scrape metrics" },
+          { id: "p2", text: "Write PromQL queries: rate, sum, avg, histogram" },
+          { id: "p3", text: "Deploy Grafana, connect to Prometheus data source" },
+          { id: "p4", text: "Build a dashboard: CPU, memory, request rate" },
+          { id: "p5", text: "Set up an alert rule in Prometheus Alertmanager", resource: "Free: grafana.com/tutorials" },
+        ]
+      },
+      {
+        title: "SLIs, SLOs & Error Budgets",
+        tasks: [
+          { id: "s1", text: "Understand SLI vs SLO vs SLA — write your own definitions" },
+          { id: "s2", text: "Define an SLO for your EC2 web app (e.g. 99.9% uptime)" },
+          { id: "s3", text: "Calculate an error budget: what does 0.1% downtime allow?" },
+          { id: "s4", text: "Read Google SRE Book Ch.2–4 (free at sre.google/sre-book)" },
+        ]
+      },
+      {
+        title: "Incident Response & CI/CD",
+        tasks: [
+          { id: "i1", text: "Write a basic runbook for a fake incident" },
+          { id: "i2", text: "Practice a postmortem template (5 whys method)" },
+          { id: "i3", text: "Set up GitHub Actions: auto-run a test on every push" },
+          { id: "i4", text: "Deploy a simple app automatically on merge to main" },
+        ]
+      }
+    ]
+  },
+  {
+    id: 4, label: "Phase 4", title: "Python for SRE", weeks: "Weeks 13–16",
+    analogy: "💼 Finance analogy: Python is your automation tool — like a macro in Excel but for infrastructure. Instead of clicking through dashboards, you write a script that checks 50 servers in 2 seconds. SREs who can code save their teams hours every week.",
+    topics: [
+      {
+        title: "Python Fundamentals",
+        tasks: [
+          { id: "py1", text: "Variables, loops, conditionals, functions" },
+          { id: "py2", text: "File I/O: read logs, write reports" },
+          { id: "py3", text: "Error handling: try/except patterns" },
+          { id: "py4", text: "Virtual environments and pip", resource: "Free: Python.org beginner guide, automate.borgar.in" },
+        ]
+      },
+      {
+        title: "SRE Automation Scripts",
+        tasks: [
+          { id: "py5", text: "Write a script that checks if a URL returns 200 OK" },
+          { id: "py6", text: "Parse a log file and count error occurrences" },
+          { id: "py7", text: "Use boto3 (AWS SDK) to list your S3 buckets" },
+          { id: "py8", text: "Write a health-check script that alerts if disk > 80%" },
+          { id: "py9", text: "Schedule a script with cron on your EC2" },
+        ]
+      }
+    ]
+  },
+  {
+    id: 5, label: "Phase 5", title: "Kubernetes & Job Prep", weeks: "Weeks 17–20",
+    analogy: "💼 Finance analogy: Kubernetes is like a clearing house — it manages hundreds of containers (transactions) automatically, routing work to healthy nodes, restarting failed ones. Understanding K8s puts you in the top tier of Junior SRE candidates.",
+    topics: [
+      {
+        title: "Kubernetes Basics",
+        tasks: [
+          { id: "k1", text: "Understand pods, deployments, services, namespaces" },
+          { id: "k2", text: "Run Minikube locally or use AWS EKS free tier" },
+          { id: "k3", text: "kubectl get, describe, logs, exec commands" },
+          { id: "k4", text: "Deploy a containerised app to a cluster" },
+          { id: "k5", text: "Set resource limits and liveness/readiness probes", resource: "Free: kubernetes.io/docs/tutorials" },
+        ]
+      },
+      {
+        title: "Portfolio & Job Prep",
+        tasks: [
+          { id: "j1", text: "Push all projects to GitHub with good READMEs" },
+          { id: "j2", text: "Write a blog post about one thing you built" },
+          { id: "j3", text: "Update your SRE CV with all new skills and projects" },
+          { id: "j4", text: "Practice STAR-format answers for SRE interviews" },
+          { id: "j5", text: "Do 3 mock technical interviews (Linux, monitoring, incidents)" },
+          { id: "j6", text: "Apply to 5 Junior SRE or DevOps roles" },
+        ]
+      }
+    ]
+  }
+];
+
+const STORAGE_KEY = 'jawwad_sre_progress_v1';
+
+function loadDone() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+}
+function saveDone(done) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(done));
+}
+
+let done = loadDone();
+
+// Pre-populate already-completed tasks
+PHASES.forEach(phase => phase.topics.forEach(topic => topic.tasks.forEach(task => {
+  if (task.done && !done[task.id]) done[task.id] = true;
+})));
+saveDone(done);
+
+let activePhase = 1;
+
+function countPhase(phase) {
+  let total = 0, completed = 0;
+  phase.topics.forEach(t => t.tasks.forEach(task => {
+    total++;
+    if (done[task.id]) completed++;
+  }));
+  return { total, completed };
+}
+
+function totalAll() {
+  let total = 0, completed = 0;
+  PHASES.forEach(p => { const c = countPhase(p); total += c.total; completed += c.completed; });
+  return { total, completed };
+}
+
+function renderNav() {
+  const nav = document.getElementById('phaseNav');
+  nav.innerHTML = PHASES.map(p => {
+    const { total, completed } = countPhase(p);
+    return `<button onclick="setPhase(${p.id})" class="${activePhase === p.id ? 'active' : ''}" id="nav-${p.id}">
+      ${p.label}: ${p.title.split(' ')[0]} <span class="badge">${completed}/${total}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderPhase() {
+  const phase = PHASES.find(p => p.id === activePhase);
+  const { total, completed } = countPhase(phase);
+  const pct = Math.round((completed / total) * 100);
+
+  let html = `<div class="phase-header">
+    <h2>${phase.title}</h2>
+    <div class="weeks">${phase.weeks} · ${completed} of ${total} tasks done (${pct}%)</div>
+  </div>
+  <div class="phase-stats">
+    <div class="stat"><div class="num">${completed}</div><div class="lbl">Done</div></div>
+    <div class="stat"><div class="num">${total - completed}</div><div class="lbl">Remaining</div></div>
+    <div class="stat"><div class="num">${pct}%</div><div class="lbl">Complete</div></div>
+  </div>
+  <div class="analogy-box"><strong>💼 Finance → SRE:</strong> ${phase.analogy.replace('💼 Finance analogy: ', '')}</div>`;
+
+  phase.topics.forEach(topic => {
+    const topicDone = topic.tasks.filter(t => done[t.id]).length;
+    html += `<div class="topic">
+      <div class="topic-title">${topic.title} <span class="topic-progress">${topicDone}/${topic.tasks.length}</span></div>`;
+    topic.tasks.forEach(task => {
+      const isDone = !!done[task.id];
+      html += `<div class="task ${isDone ? 'done' : ''}" onclick="toggle('${task.id}')">
+        <div class="checkbox"></div>
+        <div>
+          <div class="task-text">${task.text}</div>
+          ${task.resource ? `<div class="task-resource">📚 ${task.resource.includes('http') ? `<a href="${task.resource.match(/https?:\/\/[^\s)]+/)?.[0]}" target="_blank">${task.resource}</a>` : task.resource}</div>` : ''}
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  document.getElementById('phaseContent').innerHTML = html;
+}
+
+function renderGlobal() {
+  const { total, completed } = totalAll();
+  const pct = Math.round((completed / total) * 100);
+  document.getElementById('globalBar').style.width = pct + '%';
+  document.getElementById('globalLabel').textContent = `Overall progress: ${completed}/${total} tasks (${pct}%)`;
+}
+
+function setPhase(id) {
+  activePhase = id;
+  renderNav();
+  renderPhase();
+}
+
+function toggle(taskId) {
+  done[taskId] = !done[taskId];
+  saveDone(done);
+  renderNav();
+  renderPhase();
+  renderGlobal();
+}
+
+renderNav();
+renderPhase();
+renderGlobal();
+</script>
+</body>
+</html>
