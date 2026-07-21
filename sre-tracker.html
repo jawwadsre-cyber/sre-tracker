@@ -290,10 +290,26 @@ const PHASES = [
       }
     ]
   }
+]
+      }
+    ]
+  },
+  {
+    id: 6, label: "Projects", title: "Real Projects Built", weeks: "Ongoing",
+    analogy: "💼 These are actual working things you built and deployed — not exercises. Good material for a portfolio and for interview stories.",
+    topics: [
+      {
+        title: "Live Projects",
+        tasks: [
+          { id: "proj1", text: "myapp.service — self-healing systemd service (Restart=always, survives crashes and reboots)", done: true },
+          { id: "proj2", text: "SRE status dashboard — live Flask web app showing uptime, CPU, memory, disk, and myapp.service status, auto-refreshing every 2s", resource: "http://18.153.45.165:5000", done: true },
+        ]
+      }
+    ]
+  }
 ];
 
 const STORAGE_KEY = 'jawwad_sre_progress_v1';
-
 function loadDone() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
 }
